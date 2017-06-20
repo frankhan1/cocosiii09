@@ -69,7 +69,7 @@ var SettingLayer = cc.Layer.extend({
             y: size.height * 75 / 100
         });
         this.inputName.setColor(cc.color(255,0, 0));
-     //   this.inputName.ignoreAnchorPointForPosition(false);
+        this.inputName.ignoreAnchorPointForPosition(false);
         this.addChild(this.inputName, 0);
 
         this.initMenu();
@@ -112,21 +112,19 @@ var SettingLayer = cc.Layer.extend({
         cc.eventManager.addListener({
             event: cc.EventListener.KEYBOARD,
             onKeyPressed: function (keyCode, event) {
-                cc.log("keyCode= " + keyCode);
+          //      cc.log("keyCode= " + keyCode);
                 switch (keyCode) {
                     case 39:
                         layer.nameString = layer.nameString.trim();
                         layer.ls.setItem(layer.nameString,":password:1234567890:score:200:date:2017/06/20:memo:FRANK HAN");
-
                         // cc.log("name : "+layer.nameString);
                         // cc.log("description : "+layer.ls.getItem(layer.nameString));
-                        // var description = layer.ls.getItem(layer.nameString);
+                         var description = layer.ls.getItem(layer.nameString);
                         // cc.log("description : "+description);
                         // var p1 = description.indexOf(":password:")+10;
                         // var p2 = description.indexOf(":score:");
-                        // var pswd = description.slice(p1,p2);
-                        // cc.log("p1 = "+p1+" p2 = "+p2+" password : "+pswd);
-
+                         var pswd = description.slice(p1,p2);
+                         cc.log("p1 = "+p1+" p2 = "+p2+" password : "+pswd);
                         //   this.ls.setItem("KING","P@ssw0rd 800 2017/06/20 FRANKHAN");
                     //    cc.log("Name = "+this.ls.getItem("name"));
                         break;
