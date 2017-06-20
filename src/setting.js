@@ -5,9 +5,9 @@ var SettingLayer = cc.Layer.extend({
     nameString: " ",
     // vars : {"name":"Name","score":0}, // 傳遞屬性物件
     ls: null,
-    kb: ["?", "?", "?", "?", "?", "?", "?", "?", "<--", "?", "?", "?", "?", "?", "?", "?",  // 0~15
+    kb: ["?", "?", "?", "?", "?", "?", "?", "?", "?", "->", "?", "?", "?", "<-|", "?", "?",  // 0~15
         "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",  // 16~31
-        " ", "?", "?", "?", "?", "<-", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",  // 32~47
+        " ", "?", "?", "?", "?", "<-", "^", "->", "v", "?", "?", "?", "?", "?", "?", "?",  // 32~47
         "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "?", "?", "?", "?", "?", "?",  // 48~63
         "?", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",  // 64~79
         "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "?", "?", "?", "?", "?",  // 80~95
@@ -26,15 +26,11 @@ var SettingLayer = cc.Layer.extend({
         this.name = name;
         this.score = score;
         this.ls = cc.sys.localStorage;
-        cc.log("Setting ctor data= " + this.data + " name = " + this.name + " score = " + this.score);
-      this.ls.setItem("KING","P@ssw0rd 800 2017/06/20 FRANKHAN");
-      //       this.ls.setItem("score","800");
-      //       this.ls.setItem("date","2017/06/19");
-      //       this.ls.setItem("level","3");
-
-            cc.log("Name = "+this.ls.getItem("name"));
-            cc.log("score"+this.ls.getItem("score"));
-            cc.log("date"+this.ls.getItem("date"));
+    //    cc.log("Setting ctor data= " + this.data + " name = " + this.name + " score = " + this.score);
+   //   this.ls.setItem("KING",":password:P@ssw0rd:score:800:date:2017/06/20:memo:FRANKHAN");
+            // cc.log("Name = "+this.ls.getItem("name"));
+            // cc.log("score"+this.ls.getItem("score"));
+            // cc.log("date"+this.ls.getItem("date"));
         var bg = new cc.Sprite(res.hj10);
         bg.attr({
             x: size.width / 2,
@@ -118,6 +114,22 @@ var SettingLayer = cc.Layer.extend({
             onKeyPressed: function (keyCode, event) {
                 cc.log("keyCode= " + keyCode);
                 switch (keyCode) {
+                    case 39:
+                        layer.nameString = layer.nameString.trim();
+                        layer.ls.setItem(layer.nameString,":password:1234567890:score:200:date:2017/06/20:memo:FRANK HAN");
+
+                        // cc.log("name : "+layer.nameString);
+                        // cc.log("description : "+layer.ls.getItem(layer.nameString));
+                        // var description = layer.ls.getItem(layer.nameString);
+                        // cc.log("description : "+description);
+                        // var p1 = description.indexOf(":password:")+10;
+                        // var p2 = description.indexOf(":score:");
+                        // var pswd = description.slice(p1,p2);
+                        // cc.log("p1 = "+p1+" p2 = "+p2+" password : "+pswd);
+
+                        //   this.ls.setItem("KING","P@ssw0rd 800 2017/06/20 FRANKHAN");
+                    //    cc.log("Name = "+this.ls.getItem("name"));
+                        break;
                     case keyCode:
                         layer.nameString = layer.nameString + layer.kb[keyCode];
                         layer.inputName.setString(layer.nameString);
