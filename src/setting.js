@@ -3,7 +3,6 @@ var SettingLayer = cc.Layer.extend({
     nameTitle: null,
     colorName: null,
     nameString: " ",
-    // vars : {"name":"Name","score":0}, // 傳遞屬性物件
     ls: null,
     kb: ["?", "?", "?", "?", "?", "?", "?", "?", "?", "->", "?", "?", "?", "<-|", "?", "?",  // 0~15
         "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",  // 16~31
@@ -16,21 +15,23 @@ var SettingLayer = cc.Layer.extend({
         "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",  // 128~143
         "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",  // 144~159
         "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",  // 160~175
-        "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "=",",", "-", ".", "/", "`"], // 176~192
+        "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "=", ",", "-", ".", "/", "`"], // 176~192
 
-
-        ctor: function (data, name, score) {
+    ctor: function (kn, ks, kd, yn, yp, ys, yd, data) {
         this._super();
         var size = cc.winSize;
         this.data = data;
-        this.name = name;
-        this.score = score;
+        this.kn = kn;
+        this.ks = ks;
+        this.kd = kd;
+        this.yn = yn;
+        this.yp = yp;
+        this.ys = ys;
+        this.yd = yd;
         this.ls = cc.sys.localStorage;
-    //    cc.log("Setting ctor data= " + this.data + " name = " + this.name + " score = " + this.score);
-   //   this.ls.setItem("KING",":password:P@ssw0rd:score:800:date:2017/06/20:memo:FRANKHAN");
-            // cc.log("Name = "+this.ls.getItem("name"));
-            // cc.log("score"+this.ls.getItem("score"));
-            // cc.log("date"+this.ls.getItem("date"));
+        var t1s = "KING : " + this.kn + "      SCORE : " + this.ks + "      DATE : " + this.kd;
+        var t2s = "YOUR : " + this.yn + "      SCORE : " + this.ys + "      DATE : " + this.yd;
+
         var bg = new cc.Sprite(res.hj10);
         bg.attr({
             x: size.width / 2,
@@ -38,10 +39,10 @@ var SettingLayer = cc.Layer.extend({
         });
         this.addChild(bg, 0);
 
-        var title = new cc.LabelTTF("PLEASE KEY IN YOUR NAME & SELECT ONE LEVEL", "", 30);
+        var title = new cc.LabelTTF("PLEASE SELECT ONE LEVEL", "", 30);
         title.attr({
             x: size.width / 2,
-            y: size.height * 9 / 10
+            y: size.height * 7 / 10
         });
         title.setColor(cc.color(255, 0, 0));
         this.addChild(title, 1);
@@ -50,27 +51,41 @@ var SettingLayer = cc.Layer.extend({
             cc.color(255, 255, 255, 150),
             900, 60);
         colorTitle.x = size.width / 2;
-        colorTitle.y = size.height * 9 / 10;
+        colorTitle.y = size.height * 7 / 10;
         colorTitle.ignoreAnchorPointForPosition(false);
         this.addChild(colorTitle, 0);
 
-        this.nameTitle = new cc.LabelTTF("YOUR NAME : ", "", 36);
-        this.nameTitle.attr({
-            x: 220,
+        this.t1 = new cc.LabelTTF(t1s, "", 30);
+        this.t1.attr({
+            x: size.width / 2,
+            y: size.height * 9 / 10
+        });
+        this.t1.setColor(cc.color(255, 0, 0));
+        this.addChild(this.t1, 1);
+
+        var t1c = new cc.LayerColor(
+            cc.color(255, 255, 255, 150),
+            900, 60);
+        t1c.x = size.width / 2;
+        t1c.y = size.height * 9 / 10;
+        t1c.ignoreAnchorPointForPosition(false);
+        this.addChild(t1c, 0);
+
+        this.t2 = new cc.LabelTTF(t2s, "", 30);
+        this.t2.attr({
+            x: size.width / 2,
             y: size.height * 8 / 10
         });
-        this.nameTitle.setColor(cc.color(255, 0, 0));
-        this.nameTitle.ignoreAnchorPointForPosition(false);
-        this.addChild(this.nameTitle);
+        this.t2.setColor(cc.color(255, 0, 0));
+        this.addChild(this.t2, 1);
 
-        this.inputName = new cc.LabelTTF(" ", "", 36);
-        this.inputName.attr({
-            x: 350,
-            y: size.height * 75 / 100
-        });
-        this.inputName.setColor(cc.color(255,0, 0));
-        this.inputName.ignoreAnchorPointForPosition(false);
-        this.addChild(this.inputName, 0);
+        var t2c = new cc.LayerColor(
+            cc.color(255, 255, 255, 150),
+            900, 60);
+        t2c.x = size.width / 2;
+        t2c.y = size.height * 8 / 10;
+        t2c.ignoreAnchorPointForPosition(false);
+        this.addChild(t2c, 0);
 
         this.initMenu();
         this.myKeyListener(this);
@@ -112,57 +127,55 @@ var SettingLayer = cc.Layer.extend({
         cc.eventManager.addListener({
             event: cc.EventListener.KEYBOARD,
             onKeyPressed: function (keyCode, event) {
-          //      cc.log("keyCode= " + keyCode);
+                //      cc.log("keyCode= " + keyCode);
                 switch (keyCode) {
                     case 39:
                         layer.nameString = layer.nameString.trim();
-                        layer.ls.setItem(layer.nameString,":password:1234567890:score:200:date:2017/06/20:memo:FRANK HAN");
+                        layer.ls.setItem(layer.nameString, ":password:1234567890:score:200:date:2017/06/20:memo:FRANK HAN");
                         // cc.log("name : "+layer.nameString);
                         // cc.log("description : "+layer.ls.getItem(layer.nameString));
-                         var description = layer.ls.getItem(layer.nameString);
+                        var description = layer.ls.getItem(layer.nameString);
                         // cc.log("description : "+description);
                         // var p1 = description.indexOf(":password:")+10;
                         // var p2 = description.indexOf(":score:");
-                         var pswd = description.slice(p1,p2);
-                         cc.log("p1 = "+p1+" p2 = "+p2+" password : "+pswd);
+                        var pswd = description.slice(p1, p2);
+                        cc.log("p1 = " + p1 + " p2 = " + p2 + " password : " + pswd);
                         //   this.ls.setItem("KING","P@ssw0rd 800 2017/06/20 FRANKHAN");
-                    //    cc.log("Name = "+this.ls.getItem("name"));
+                        //    cc.log("Name = "+this.ls.getItem("name"));
                         break;
                     case keyCode:
                         layer.nameString = layer.nameString + layer.kb[keyCode];
                         layer.inputName.setString(layer.nameString);
                         break;
-                     }
                 }
-            }, this);
+            }
+        }, this);
     },
 
 
     menuLevel1: function () {
-        cc.director.pushScene(new Play01Scene(1, this.name, this.score));
+        cc.director.pushScene(new Play01Scene(this.kn, this.ks, this.kd, this.yn, this.yp, this.ys, this.yd, 1));
     },
     menuLevel2: function () {
-        cc.director.pushScene(new Play01Scene(2, this.name, this.score));
+        cc.director.pushScene(new Play01Scene(this.kn, this.ks, this.kd, this.yn, this.yp, this.ys, this.yd, 2));
     },
     menuLevel3: function () {
-        cc.director.pushScene(new Play01Scene(3, this.name, this.score));
+        cc.director.pushScene(new Play01Scene(this.kn, this.ks, this.kd, this.yn, this.yp, this.ys, this.yd, 3));
     },
     menuLevel4: function () {
-        cc.director.pushScene(new Play01Scene(4, this.name, this.score));
+        cc.director.pushScene(new Play01Scene(this.kn, this.ks, this.kd, this.yn, this.yp, this.ys, this.yd, 4));
     },
 
     back: function () {
         //   cc.director.popScene();
-        cc.director.pushScene(new MainmenuScene());
+        cc.director.pushScene(new MainmenuScene(this.kn, this.ks, this.kd, this.yn, this.yp, this.ys, this.yd, this.data));
     },
 });
 
 var SettingScene = cc.Scene.extend({
-    ctor: function (data, name, score) {    //為傳替參數
+    ctor: function (kn, ks, kd, yn, yp, ys, yd, data) {    //為傳替參數
         this._super();
-        var layer = new SettingLayer(data, name, score);
-        cc.log("Setting data= " + data + " name = " + name + " score = " + score);
-
+        var layer = new SettingLayer(kn, ks, kd, yn, yp, ys, yd, data);
         this.addChild(layer);
         this.focused = true;
     }

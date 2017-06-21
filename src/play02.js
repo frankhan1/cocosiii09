@@ -1,5 +1,6 @@
 var Play02Layer = cc.Layer.extend({
     counter: 0,
+    date: "",
     hammer: null,
     bee: null, bee1: null,
     bfly: null, bfly1: null,
@@ -18,17 +19,27 @@ var Play02Layer = cc.Layer.extend({
     colorScore: null,
     scoreTitle: " ",
     scoreString: " ",
-    recDate : null,
+    recDate: null,
     colorDate: " ",
-    dateTitle : " ",
+    dateTitle: " ",
     dateString: " ",
-    ctor: function (data,date,score) {
+    ctor: function (kn, ks, kd, yn, yp, ys, yd, data) {
         this._super();
         var size = cc.winSize;
-        var level = ["BASIC", "JUNIOR", "MIDDLE", "SENIOR"];
+        this.d = new Date();
         this.data = data;
-        this.recDate = date;
-        this.highScore = score;
+        this.kn = kn;
+        this.ks = ks;
+        this.kd = kd;
+        this.yn = yn;
+        this.yp = yp;
+        this.ys = ys;
+        this.yd = yd;
+        this.ls = cc.sys.localStorage;
+        var t1s = "KING : " + this.kn + "      SCORE : " + this.ks + "      DATE : " + this.kd;
+        var t2s = "YOUR : " + this.yn + "      SCORE : " + this.ys + "      DATE : " + this.yd;
+        var level = ["BASIC", "JUNIOR", "MIDDLE", "SENIOR"];
+
         var bg = new cc.Sprite(res.hj10);// ,cc.rect(0,192,512,172) left up x=0,y=192 抓圖
         bg.attr({
             x: size.width / 2,
@@ -36,45 +47,69 @@ var Play02Layer = cc.Layer.extend({
         });
         this.addChild(bg, 0);
 
-        this.scoreTitle = new cc.LabelTTF("High Score : " + this.highScore, "", 36);
+        this.t1 = new cc.LabelTTF(t1s, "", 30);
+        this.t1.attr({
+            x: size.width / 2,
+            y: size.height * 9 / 10
+        });
+        this.t1.setColor(cc.color(255, 0, 0));
+        this.addChild(this.t1, 1);
+
+        var t1c = new cc.LayerColor(
+            cc.color(255, 255, 255, 150),
+            900, 60);
+        t1c.x = size.width / 2;
+        t1c.y = size.height * 9 / 10;
+        t1c.ignoreAnchorPointForPosition(false);
+        this.addChild(t1c, 0);
+
+        this.t2 = new cc.LabelTTF(t2s, "", 30);
+        this.t2.attr({
+            x: size.width / 2,
+            y: size.height * 8 / 10
+        });
+        this.t2.setColor(cc.color(255, 0, 0));
+        this.addChild(this.t2, 1);
+
+        var t2c = new cc.LayerColor(
+            cc.color(255, 255, 255, 150),
+            900, 60);
+        t2c.x = size.width / 2;
+        t2c.y = size.height * 8 / 10;
+        t2c.ignoreAnchorPointForPosition(false);
+        this.addChild(t2c, 0);
+
+        this.scoreTitle = new cc.LabelTTF(" Score : " + this.highScore, "", 36);
         this.scoreTitle.attr({
             x: 650,
-            y: size.height * 8 / 10
+            y: size.height * 7 / 10
         });
         this.scoreTitle.setColor(cc.color(0, 255, 0));
         this.scoreTitle.ignoreAnchorPointForPosition(false);
-        this.addChild(this.scoreTitle,"",1);
+        this.addChild(this.scoreTitle, "", 1);
 
         var colorScore = new cc.LayerColor(
-            cc.color(50, 255, 50,90),
+            cc.color(50, 255, 50, 90),
             200, 50);
         colorScore.x = size.width / 4;
         colorScore.y = size.height * 75 / 100;
         this.addChild(colorScore, 0);
 
-        this.dateTitle = new cc.LabelTTF("Record Date : " + this.recDate, "", 36);
-        this.dateTitle.attr({
-            x: 220,
-            y: size.height * 8 / 10
-        });
-        this.dateTitle.setColor(cc.color(0, 255, 0));
-        this.dateTitle.ignoreAnchorPointForPosition(false);
-        this.addChild(this.dateTitle);
-
-        var colorDate = new cc.LayerColor(
-            cc.color(50, 255, 50,90),
-            200, 50);
-        colorDate.x = size.width *3 / 4;
-        colorDate.y = size.height * 75 / 100;
-        this.addChild(colorDate, 0);
-
-        var gameLevel = new cc.LabelTTF(level[this.data - 1] + " LEVEL", "", 50);
+        var gameLevel = new cc.LabelTTF(level[this.data - 1] + " LEVEL", "", 36);
         gameLevel.attr({
-            x: size.width / 2,
-            y: size.height * 9 / 10
+            x: size.width / 4,
+            y: size.height * 7 / 10
         });
         gameLevel.setColor(cc.color(255, 255, 0));
         this.addChild(gameLevel);
+
+        // **** get date *****
+        var y = this.d.getFullYear();
+        var m = Number(this.d.getMonth()) + 1;
+        var d = this.d.getDate();
+        this.date = y + "/" + m + "/" + d;
+     //   cc.log("DATE = " + this.date);
+
         this.initMenu();
         this.initSprite();
         this.mymouseListener(this);
@@ -212,7 +247,13 @@ var Play02Layer = cc.Layer.extend({
         this.bfly1.x += this.bx1;
         this.bfly1.y += this.by1;
 
-        if (this.bee1.x % 200 == 0) {
+        // 1 =  200
+        // 2 = 175
+        // 3 = 150
+        // 4 = 125
+        // 0 = 225 (200 - 25*(this.data-1))
+
+        if (this.bee1.x % (200 - 50 * (this.data - 1)) == 0) {
             var t = parseInt(Math.random() * 9 + 1);
             switch (t) {
                 case 1:
@@ -254,16 +295,6 @@ var Play02Layer = cc.Layer.extend({
             }
             this.j1.runAction(cc.moveTo(0, cc.p(x1, y1)));
         }
-
-        //      var In = cc.fadeIn(2);
-        //      var scale = cc.scaleBy(2,0.5,0.5);
-
-        //      as.push(scale);
-        //      as.push(out);
-
-        //      var seq = new cc.Sequence(as);
-        //      this.sprite.runAction(seq);
-        //      this.jerry.runAction(cc.sequence(a1,d1,In,scale,out, a2,d1,In,scale,out, a3,d1,In,scale,out, a4));
     },
 
     mymouseListener: function (layer) {
@@ -284,17 +315,11 @@ var Play02Layer = cc.Layer.extend({
                     if (cc.rectContainsPoint(rectjerry, point)) {
                         layer.counter++;
                         layer.highScore = layer.counter;
-                    //    layer.score = layer.counter;
                         layer.hammer.runAction(cc.moveTo(0, cc.p(x, y)));
-                    //    layer.hammer.runAction(cc.fadeIn(1));
                         layer.isRight = !layer.isRight;
                         layer.hammer.runAction(cc.flipX(layer.isRight));
-                        layer.dateString = "Record Date : "+layer.recDate;
-                        layer.scoreString ="High Score : "+layer.highScore;
-                        layer.dateTitle.setString(layer.dateString);
+                        layer.scoreString = "High Score : " + layer.highScore;
                         layer.scoreTitle.setString(layer.scoreString);
-                    //    layer.hammer.runAction(cc.delayTime(1));
-                    //    layer.hammer.runAction(cc.fadeOut(1));
 
                     }
                 }
@@ -305,20 +330,39 @@ var Play02Layer = cc.Layer.extend({
 
 
     back: function () {
-        cc.log("Play02 data ="+this.data+"  "+this.recDate+" "+this.highScore);
-   //     cc.director.popScene(this.data,this.name,this.score);
-        cc.director.pushScene(new Play01Scene(this.data,this.recDate,this.highScore));
-   //    cc.director.popScene(this.data,this.recDate,this.highScore);
+        //    cc.log(this.kn+" "+this.ks+" "+this.kd+" "+this.yn+" "+this.ys+" "+this.yd+" "+this.data);
+        if (this.highScore > this.ys) {
+            this.ys = this.highScore;
+            this.yd = this.date;
+            var lsString = ":password:" + this.yp + ":score:" + this.ys + ":date:" + this.yd + ":memo:" + this.yn;
+            this.ls.setItem(this.yn, lsString);
+        }
+        if (this.ys > this.ks) {
+            var lsString = ":password:P@ssw0rd:score:" + this.ys + ":date:" + this.yd + ":memo:" + this.yn;
+            this.ls.setItem("KING", lsString);
+        }
+        cc.director.pushScene(new Play01Scene(this.kn, this.ks, this.kd, this.yn, this.yp, this.ys, this.yd, this.data));
+        //    cc.director.popScene(this.data,this.recDate,this.highScore);
     },
     home: function () {
+        if (this.highScore > this.ys) {
+            this.ys = this.highScore;
+            this.yd = this.date;
+            var lsString = ":password:" + this.yp + ":score:" + this.ys + ":date:" + this.yd + ":memo:" + this.yn;
+            this.ls.setItem(this.yn, lsString);
+        }
+        if (this.ys > this.ks) {
+            var lsString = ":password:P@ssw0rd:score:" + this.ys + ":date:" + this.yd + ":memo:" + this.yn;
+            this.ls.setItem("KING", lsString);
+        }
         cc.director.pushScene(new MainmenuScene());
     }
 });
 
 var Play02Scene = cc.Scene.extend({
-    ctor: function (data,date,score) {    //為傳替參數
+    ctor: function (kn, ks, kd, yn, yp, ys, yd, data) {    //為傳替參數
         this._super();
-        var layer = new Play02Layer(data,date,score);
+        var layer = new Play02Layer(kn, ks, kd, yn, yp, ys, yd, data);
         this.addChild(layer);
     }
 });

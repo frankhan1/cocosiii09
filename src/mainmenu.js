@@ -1,7 +1,7 @@
 var MainMenuLayer = cc.Layer.extend({
- //   sprite: null,
-    //  vars : {"var1":"NOBADY","var2":0}, // 傳遞屬性物件
     date: "",
+    ks2 :"",
+    kd2 :"",
     t3: null,
     t3c: null,
     t3s: "",
@@ -9,7 +9,6 @@ var MainMenuLayer = cc.Layer.extend({
     t5c: null,
     t5s: "",
     isFlipX: true,
-    //   bfly: null,
     ls: null,
     kb: ["?", "?", "?", "?", "?", "?", "?", "?", "?", "->", "?", "?", "?", "<-|", "?", "?",  // 0~15
         "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",  // 16~31
@@ -30,16 +29,16 @@ var MainMenuLayer = cc.Layer.extend({
         var size = cc.winSize;
         this.d = new Date();
         this.ls = cc.sys.localStorage;
-
+        this.data = 0;
+        this.keyCode =  0;
         var description = this.ls.getItem("KING");
         var m1 = description.indexOf(":memo:") + 6;
-        var kn = description.slice(m1, description.length);
+        this.kn = description.slice(m1, description.length);
         var s1 = description.indexOf(":score:") + 7;
         var d1 = description.indexOf(":date:");
-        var ks = description.slice(s1, d1);
-        var kd = description.slice(d1 + 6, m1 - 6);
-        var t1String = "KING : " + kn + "      SCORE : " + ks + "      DATE : " + kd;
-        //   cc.log("m1 = "+m1+" s1 = "+s1+" d1 = "+d1+" T1string : "+t1String);
+        this.ks = description.slice(s1, d1);
+        this.kd = description.slice(d1 + 6, m1 - 6);
+        var t1String = "KING : " + this.kn + "      SCORE : " + this.ks + "      DATE : " + this.kd;
 
         var bg = new cc.Sprite(res.hj00);
         bg.attr({
@@ -148,11 +147,10 @@ var MainMenuLayer = cc.Layer.extend({
     },
 
     myKeyListener: function (layer) {
-        cc.log("KEY OK");
         cc.eventManager.addListener({
             event: cc.EventListener.KEYBOARD,
             onKeyPressed: function (keyCode, event) {
-                cc.log("keyCode= " + keyCode);
+                layer.keyCode = keyCode;
                 switch (keyCode) {
                     case 8 :
                         if (layer.isFlipX) {
@@ -173,7 +171,6 @@ var MainMenuLayer = cc.Layer.extend({
                         if (layer.isFlipX) {
                             layer.t3s = layer.t3s.trim();
                             var dn2 = layer.ls.getItem(layer.t3s);
-                            cc.log("description : " + dn2);
                             if (dn2) {
                                 layer.tString = "WELCOME " + layer.t3s + " PLEASE INPUT PASSWORD " ;
                                 layer.title.setString(layer.tString);
@@ -189,25 +186,22 @@ var MainMenuLayer = cc.Layer.extend({
                             layer.t3s = layer.t3s.trim();
                             var dn3 = layer.ls.getItem(layer.t3s);
                             if (dn3) {
-                                cc.log("dn3 = " + dn3);
                                 var m2 = dn3.indexOf(":memo:") + 6;
                                 var s12 = dn3.indexOf(":score:") + 7;
                                 var d12 = dn3.indexOf(":date:");
                                 var pswd = dn3.slice(10, s12 - 7).trim();
-                                cc.log("pswd= " + pswd);
-                                var ks2 = dn3.slice(s12, d12);
-                                var kd2 = dn3.slice(d12 + 6, m2 - 6);
+                                layer.ks2 = dn3.slice(s12, d12);
+                                layer.kd2 = dn3.slice(d12 + 6, m2 - 6);
 
                                 if (layer.t5s == pswd) {
-                                    cc.log("t5s= " + layer.t5s + " pswd= " + pswd);
-                                    layer.t1String = "NAME : " + layer.t3s + "      SCORE : " + ks2 + "      DATE : " + kd2;
+                                    layer.t1String = "NAME : " + layer.t3s + "      SCORE : " + layer.ks2 + "      DATE : " + layer.kd2;
                                     layer.t1.setString(layer.t1String);
-                                    cc.log("t1String= " + layer.t1String);
                                     layer.tString = "WELCOME "+layer.t3s+" GOOD LUCK FOR YOU !";
                                     layer.title.setString(layer.tString);
                                 } else {
                                     layer.tString = layer.t3s+" FORGOT YOUR PASSWORD ?";
                                     layer.title.setString(layer.tString);
+
                                 }
 
                             } else {
@@ -221,11 +215,8 @@ var MainMenuLayer = cc.Layer.extend({
                                  cc.log("DATE = "+layer.date);
                                 var lsString = ":password:"+layer.t5s+":score:0:date:"+layer.date+":memo:"+layer.t3s;
                                 layer.ls.setItem(layer.t3s,lsString);
+
                             }
-
-
-                            // var dp = layer.ls.getItem(layer.t3s);
-                            // cc.log("description : " + dp);
                             layer.isFlipX = !layer.isFlipX;
                             layer.NodeGrid(250, 500);
                         }
@@ -255,12 +246,18 @@ var MainMenuLayer = cc.Layer.extend({
     },
 
     play: function () {
-        cc.director.pushScene(new Play01Scene(0, this.date, 0)); //場景切換 Test1Scene
-
+        if (this.t5s) {
+            if ((this.keyCode == 9)  |  (this.keyCode == 13 ) | (this.keyCode == 39 )) {
+                cc.director.pushScene(new Play01Scene(this.kn, this.ks, this.kd, this.t3s, this.t5s, this.ks2, this.kd2, this.data)); //場景切換 Test1Scene
+            }
+        }
     },
     setting: function () {
-        cc.director.pushScene(new SettingScene(1, this.date, 0)); //場景切換+變數傳遞test2Scene
-    },
+        if (this.t5s) {
+            if ((this.keyCode == 9) | (this.keyCode == 13 ) | (this.keyCode == 39 )) {
+                cc.director.pushScene(new SettingScene(this.kn, this.ks, this.kd, this.t3s, this.t5s, this.ks2, this.kd2, this.data)); //場景切換+變數傳遞test2Scene
+            }
+        }        },
 
     NodeGrid: function (a, b) {
         var nodeGrid = new cc.NodeGrid();
@@ -278,12 +275,8 @@ var MainMenuLayer = cc.Layer.extend({
         var sbfly = bfly.getContentSize();   // return sprite size
         var shak = new cc.Shaky3D(10, sbfly, 5, false);
         nodeGrid.runAction(shak);
-
-
-    },
-
+    }
 });
-
 
 var MainmenuScene = cc.Scene.extend({
     onEnter: function () {
