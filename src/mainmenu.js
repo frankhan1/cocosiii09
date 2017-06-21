@@ -1,5 +1,5 @@
 var MainMenuLayer = cc.Layer.extend({
-    sprite: null,
+ //   sprite: null,
     //  vars : {"var1":"NOBADY","var2":0}, // 傳遞屬性物件
     date: "",
     t3: null,
@@ -8,7 +8,7 @@ var MainMenuLayer = cc.Layer.extend({
     t5: null,
     t5c: null,
     t5s: "",
-    isFlipx: true,
+    isFlipX: true,
     //   bfly: null,
     ls: null,
     kb: ["?", "?", "?", "?", "?", "?", "?", "?", "?", "->", "?", "?", "?", "<-|", "?", "?",  // 0~15
@@ -32,7 +32,6 @@ var MainMenuLayer = cc.Layer.extend({
         this.ls = cc.sys.localStorage;
 
         var description = this.ls.getItem("KING");
-        //   cc.log("description : "+description);
         var m1 = description.indexOf(":memo:") + 6;
         var kn = description.slice(m1, description.length);
         var s1 = description.indexOf(":score:") + 7;
@@ -49,19 +48,12 @@ var MainMenuLayer = cc.Layer.extend({
         });
         this.addChild(bg, 0);
 
-        var title = new cc.LabelTTF("WELCOME HAMSTER", "", 60);
-        title.x = size.width / 2;
-        title.y = size.height * 3 / 10;
-        title.setColor(cc.color(255, 0, 0));
-        title.ignoreAnchorPointForPosition(false);
-        this.addChild(title);
-
-        // **** get date *****
-        //  var y = this.d.getFullYear();
-        //  var m = Number(this.d.getMonth())+1;
-        //  var d = this.d.getDate();
-        //  this.date = y+"/"+m+"/"+d;
-        //  cc.log("DATE = "+this.date);
+        this.title = new cc.LabelTTF("WELCOME HAMSTER", "", 36);
+        this.title.x = size.width / 2;
+        this.title.y = size.height * 3 / 10;
+        this.title.setColor(cc.color(255, 0, 0));
+        this.title.ignoreAnchorPointForPosition(false);
+        this.addChild(this.title);
 
         this.t1 = new cc.LabelTTF(t1String, "", 30);
         this.t1.attr({
@@ -153,27 +145,6 @@ var MainMenuLayer = cc.Layer.extend({
         this.addChild(menu);
 
         this.NodeGrid(250, 500);
-
-        //     NodeGrid : function () {
-        //         var nodeGrid = new cc.NodeGrid();
-        //         this.addChild(nodeGrid);
-        //
-        //         this.bfly = new cc.Sprite(res.bfly);
-        //         this.bfly.attr({
-        //             x: 250,
-        //             y: 500
-        //         });
-        //         this.bfly.scaleX = 0.3;
-        //         this.bfly.scaleY = 0.3;
-        //         nodeGrid.addChild(this.bfly, 0);
-        //
-        //         var sbfly = this.bfly.getContentSize();   // return sprite size
-        //         var shak = new cc.Shaky3D(10, sbfly, 5, false);
-        //         nodeGrid.runAction(shak);
-        //
-        //
-        //     }
-        //     ,
     },
 
     myKeyListener: function (layer) {
@@ -183,14 +154,34 @@ var MainMenuLayer = cc.Layer.extend({
             onKeyPressed: function (keyCode, event) {
                 cc.log("keyCode= " + keyCode);
                 switch (keyCode) {
+                    case 8 :
+                        if (layer.isFlipX) {
+                            if (layer.t3s) {
+                                layer.t3s = layer.t3s.substr(0, layer.t3s.length - 1);
+                                layer.t3.setString(layer.t3s);
+                            }
+                        } else {
+                            if (layer.t5s) {
+                                layer.t5s = layer.t5s.substr(0, layer.t5s.length - 1);
+                                layer.t5.setString(layer.t5s);
+                            }
+                        }
+                        break;
                     case  9 :
                     case  13 :
                     case  39 :
-                        if (!layer.isFlipX) {
+                        if (layer.isFlipX) {
                             layer.t3s = layer.t3s.trim();
                             var dn2 = layer.ls.getItem(layer.t3s);
                             cc.log("description : " + dn2);
+                            if (dn2) {
+                                layer.tString = "WELCOME " + layer.t3s + " PLEASE INPUT PASSWORD " ;
+                                layer.title.setString(layer.tString);
 
+                            } else {
+                                layer.tString = "WELCOME " + layer.t3s + " PLEASE SETTING PASSWORD " ;
+                                layer.title.setString(layer.tString);
+                            }
                             layer.NodeGrid(650, 500);
                             layer.isFlipX = !layer.isFlipX;
                         } else {
@@ -207,12 +198,29 @@ var MainMenuLayer = cc.Layer.extend({
                                 var ks2 = dn3.slice(s12, d12);
                                 var kd2 = dn3.slice(d12 + 6, m2 - 6);
 
-                                if (layer.t5s = pswd) {
-                                    cc.log("t5s= " + layer.t3s + " pswd= " + pswd);
+                                if (layer.t5s == pswd) {
+                                    cc.log("t5s= " + layer.t5s + " pswd= " + pswd);
                                     layer.t1String = "NAME : " + layer.t3s + "      SCORE : " + ks2 + "      DATE : " + kd2;
                                     layer.t1.setString(layer.t1String);
                                     cc.log("t1String= " + layer.t1String);
+                                    layer.tString = "WELCOME "+layer.t3s+" GOOD LUCK FOR YOU !";
+                                    layer.title.setString(layer.tString);
+                                } else {
+                                    layer.tString = layer.t3s+" FORGOT YOUR PASSWORD ?";
+                                    layer.title.setString(layer.tString);
                                 }
+
+                            } else {
+                                layer.tString = "WELCOME NEW PLAYER " + layer.t3s;
+                                layer.title.setString(layer.tString);
+                                // **** get date *****
+                                 var y = layer.d.getFullYear();
+                                 var m = Number(layer.d.getMonth())+1;
+                                 var d = layer.d.getDate();
+                                 layer.date = y+"/"+m+"/"+d;
+                                 cc.log("DATE = "+layer.date);
+                                var lsString = ":password:"+layer.t5s+":score:0:date:"+layer.date+":memo:"+layer.t3s;
+                                layer.ls.setItem(layer.t3s,lsString);
                             }
 
 
@@ -233,7 +241,7 @@ var MainMenuLayer = cc.Layer.extend({
                         //    cc.log("Name = "+this.ls.getItem("name"));
                         break;
                     case keyCode:
-                        if (!layer.isFlipX) {
+                        if (layer.isFlipX) {
                             layer.t3s = layer.t3s + layer.kb[keyCode];
                             layer.t3.setString(layer.t3s);
                         } else {
