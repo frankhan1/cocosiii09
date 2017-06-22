@@ -10,6 +10,8 @@ var MainMenuLayer = cc.Layer.extend({
     t5s: "",
     isFlipX: true,
     pswdString: "",
+    pswd: null,
+    lsString: "",
     ls: null,
     kb: ["?", "?", "?", "?", "?", "?", "?", "?", "?", "->", "?", "?", "?", "<-|", "?", "?",  // 0~15
         "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",  // 16~31
@@ -194,11 +196,11 @@ var MainMenuLayer = cc.Layer.extend({
                                 var m2 = dn3.indexOf(":memo:") + 6;
                                 var s12 = dn3.indexOf(":score:") + 7;
                                 var d12 = dn3.indexOf(":date:");
-                                var pswd = dn3.slice(10, s12 - 7).trim();
+                                layer.pswd = dn3.slice(10, s12 - 7).trim();
                                 layer.ks2 = dn3.slice(s12, d12);
                                 layer.kd2 = dn3.slice(d12 + 6, m2 - 6);
 
-                                if (layer.t5s == pswd) {
+                                if (layer.t5s == layer.pswd) {
                                     layer.t1String = "NAME : " + layer.t3s + "      SCORE : " + layer.ks2 + "      DATE : " + layer.kd2;
                                     layer.t1.setString(layer.t1String);
                                     layer.tString = "WELCOME " + layer.t3s + " GOOD LUCK FOR YOU !";
@@ -218,8 +220,8 @@ var MainMenuLayer = cc.Layer.extend({
                                 var d = layer.d.getDate();
                                 layer.date = y + "/" + m + "/" + d;
                                 cc.log("DATE = " + layer.date);
-                                var lsString = ":password:" + layer.t5s + ":score:0:date:" + layer.date + ":memo:" + layer.t3s;
-                                layer.ls.setItem(layer.t3s, lsString);
+                                layer.lsString = ":password:" + layer.t5s + ":score:0:date:" + layer.date + ":memo:" + layer.t3s;
+                                layer.ls.setItem(layer.t3s, layer.lsString);
 
                             }
                             layer.isFlipX = !layer.isFlipX;
@@ -233,7 +235,6 @@ var MainMenuLayer = cc.Layer.extend({
                             layer.t3.setString(layer.t3s);
                         } else {
                             layer.t5s = layer.t5s + layer.kb[keyCode];
-                            cc.log("KEYCODE+PSWD= " + keyCode + " + " + layer.pswdString);
                             layer.pswdString = layer.pswdString + "*";
                             layer.t5.setString(layer.pswdString);
                         }
@@ -246,14 +247,18 @@ var MainMenuLayer = cc.Layer.extend({
     play: function () {
         if (this.t5s) {
             if ((this.keyCode == 9) | (this.keyCode == 13 ) | (this.keyCode == 39 )) {
-                cc.director.pushScene(new Play01Scene(this.kn, this.ks, this.kd, this.t3s, this.t5s, this.ks2, this.kd2, this.data)); //場景切換 Test1Scene
+                if ((this.lsString.length > 10) | (this.t5s == this.pswd)) {
+                    cc.director.pushScene(new Play01Scene(this.kn, this.ks, this.kd, this.t3s, this.t5s, this.ks2, this.kd2, this.data)); //場景切換 Test1Scene
+                }
             }
         }
     },
     setting: function () {
         if (this.t5s) {
             if ((this.keyCode == 9) | (this.keyCode == 13 ) | (this.keyCode == 39 )) {
-                cc.director.pushScene(new SettingScene(this.kn, this.ks, this.kd, this.t3s, this.t5s, this.ks2, this.kd2, this.data)); //場景切換+變數傳遞test2Scene
+                if ((this.lsString.length > 10) | (this.t5s == this.pswd)) {
+                    cc.director.pushScene(new SettingScene(this.kn, this.ks, this.kd, this.t3s, this.t5s, this.ks2, this.kd2, this.data)); //場景切換+變數傳遞test2Scene
+                }
             }
         }
     },

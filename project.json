@@ -13,14 +13,9 @@
 
     "jsList" : [
         "src/resource.js",
-        "src/app.js",
         "src/mainmenu.js",
-        "src/mainmenu1.js",
         "src/play01.js",
         "src/setting.js",
-        "src/play02.js",
-        "src/test31.js",
-        "src/test4.js",
-        "src/test41.js"
+        "src/play02.js"
     ]
 }
